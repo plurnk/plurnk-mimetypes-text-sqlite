@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import TextSqlite from "./TextSqlite.ts";
 
 const metadata = {
-    mimetype: "text/x-sqlite-sql",
+    mimetype: "text/x-sqlite",
     glyph: "🗃️",
     extensions: [".sql", ".sqlite"] as const,
 };
@@ -11,7 +11,7 @@ const metadata = {
 describe("TextSqlite — instantiation", () => {
     it("instantiates with metadata", () => {
         const h = new TextSqlite(metadata);
-        assert.equal(h.mimetype, "text/x-sqlite-sql");
+        assert.equal(h.mimetype, "text/x-sqlite");
         assert.equal(h.glyph, "🗃️");
     });
 });
