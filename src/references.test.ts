@@ -1,5 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { assertHandlerConformance } from "@plurnk/plurnk-mimetypes/conformance";
 import TextSqlite from "./TextSqlite.ts";
 
 const h = () => new TextSqlite({ mimetype: "text/x-sqlite", glyph: "🗃", extensions: [".sqlite"] as const });
@@ -60,5 +61,22 @@ describe("text/x-sqlite references (ANTLR refs grind)", () => {
         assert.ok(defNames.has("users") && defNames.has("orders"));
         // A def's own name never appears as a ref (no self-reference).
         assert.ok(!refs.some((r) => r.name === r.container));
+    });
+
+    it("passes the SPEC §16 conformance harness", async () => {
+        await assertHandlerConformance(h(), {
+            source: SQL,
+            decoyNames: ["StringDecoy", "CommentDecoy"],
+            expectJoins: [
+                { refName: "users", container: "active_orders" },
+                { refName: "orders", container: "active_orders" },
+                { refName: "users", container: "orders" },
+            ],
+            expectRefs: [
+                { name: "users", kind: "use" },
+                { name: "orders", kind: "use" },
+                { name: "audit_log", kind: "use" },
+            ],
+        });
     });
 });
